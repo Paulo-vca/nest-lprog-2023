@@ -2,7 +2,6 @@
 
 import { IsNotEmpty, Length } from 'class-validator';
 
-
 // instalar npm i class-validator class-transformer
 export class UserDTO {
   @IsNotEmpty({
