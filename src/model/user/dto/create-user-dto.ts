@@ -5,6 +5,7 @@ import {
   IsStrongPassword,
 } from 'class-validator';
 import { User } from '../entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Description placeholder
@@ -21,6 +22,9 @@ export class CreateUserDto implements User {
    *
    * @type {string}
    */
+  @ApiProperty({
+    example: 'example@example.com'
+  })
   @IsEmail()
   email: string;
   /**
@@ -29,6 +33,9 @@ export class CreateUserDto implements User {
    *
    * @type {string}
    */
+  @ApiProperty({
+    example:'aA1@abc'
+  })
   @IsStrongPassword()
   password: string;
   /**
@@ -37,6 +44,9 @@ export class CreateUserDto implements User {
    *
    * @type {?string}
    */
+  @ApiProperty({
+    example:'example'
+  })
   @IsString()
   @IsOptional()
   name?: string;

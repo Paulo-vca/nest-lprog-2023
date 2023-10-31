@@ -1,18 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { compare, hash } from 'bcrypt';
 import { PrismaService } from 'src/database/prisma.service';
-import { UserDTO } from './../user';
 import { CreateUserDto } from './dto/create-user-dto';
+import { hash, compare } from 'bcrypt';
+import { UserDTO } from '../user';
+import { DeleteUserDto } from './dto/delete-user-dto';
+import { UserExistException } from 'src/common/exceptions/user/email-in-use.exception';
+import { UserNotFoundException } from 'src/common/exceptions/user/user-not-found.exception';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-
   async create(createUserDto: CreateUserDto): Promise<void> {
     try {
       const hashedPwd = await hash(createUserDto.password, 10);
-
       const lowerEmail = createUserDto.email.toLowerCase();
+      
+      //verificar se o user exists
+      this.exists(lowerEmail);
+
       await this.prisma.user.create({
         data: {
           ...createUserDto,
@@ -27,44 +32,59 @@ export class UserService {
     }
   }
 
-  async findAll(): Promise<UserDTO> {
-    return await this.prisma.user.findMany();
-    users.forEach((User) => delete User.password);
+  async findAll(): Promise<UserDTO[]> {
+    const users = await this.prisma.user.findMany();
+    users.forEach((user) => delete user.password);
     return users;
   }
 
-  async findByEmail(email: string): Promise<UserDTO>{
+  async findByEmail(email: string): Promise<UserDTO> {
     const lowerEmail = email.toLowerCase();
     const user = await this.prisma.user.findUnique({
-      where: { email: lowerEmail},
-    })
+      where: { email: lowerEmail },
+    });
+
+    if (!user){
+      throw new UserNotFoundException();
+    }
+
     delete user.password;
-    return user; 
+    return user;
   }
 
-  async update(id: string, userDTO: UserDTO){
+  async update(id: string, userDto: UserDTO) {
     const user = await this.prisma.user.update({
       where: { id },
-      data: { ...userDTO, updatedAt: new Date() },
+      data: { ...userDto, updatedAt: new Date() },
     });
     delete user.password;
     return user;
   }
 
-  async delete(id: string, PWD: string){
-    // validar senha para deletar
+  async delete(id: string, pwd: DeleteUserDto) {
+    //validar senha pa deletar
+    await this.validatePwd(id, pwd.currentPwd);
 
-    await this.validatePwd(id, pwd);
-
-    return this.prisma.user.delete({ where: { id } });
+    return await this.prisma.user.delete({ where: { id } });
   }
-  private async validatePwd(id: string, current: string): Promise<void>
-  const user = this.prisma.user.findUnique({ where: { id } });
-  const isCorrectPwd = await compare(currentPwd, (await user).password);
 
-  if (!isCorrectPwd){
-    // exception
-    console.log('pwd is incorrent!');
+  private async validatePwd(id: string, currentPwd: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    const isCorrectPwd = await compare(currentPwd, (await user).password);
+
+    if (!isCorrectPwd) {
+      //exeption
+      console.log('pwd is incorrect!');
+    }
+  }
+
+  async exists(email: string){
+    if(await this.prisma.user.findUnique({
+      where: { email },
+    })
+    ) {
+      throw new UserExistException();
+    }
   }
 
 }
