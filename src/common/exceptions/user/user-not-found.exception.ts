@@ -1,5 +1,7 @@
-export class UserNotFoundException extends NotFoundException{
+import { NotFoundException } from "@nestjs/common";
+
+export class UserNotFoundException extends NotFoundException {
     constructor(){
-        super('E-mail already exists!');
+        super('user not found!');
     }
 }

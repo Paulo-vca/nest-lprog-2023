@@ -1,17 +1,15 @@
-import { Body, Controller, Post, Get, Param, Delete, UseInterceptors } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user-dto';
-import { UserService } from './user.service';
-import { UserDTO } from '../user';
 import { DeleteUserDto } from './dto/delete-user-dto';
+import { Body, Controller, Get, Post, Param, Delete, Patch, UseInterceptors } from '@nestjs/common';
+import { UserDTO } from './../user';
+import { CreateUserDto } from './dto/create-user-dto';
+import { UpdateUserDto } from './dto/update-user-dto';
+import { UserService } from './user.service';
 import { LogInterceptor } from 'src/common/interceptors/log.interceptor';
-// import { UpdateUserDto } from './dto/update-user-dto';
-
-
 
 @Controller('user')
 @UseInterceptors(LogInterceptor)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto): Promise<void> {
@@ -23,18 +21,20 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get()
+  @Get('/:email')
   findByEmail(@Param('email') email: string) {
     return this.userService.findByEmail(email);
   }
 
   @Delete('/:id')
   remove(@Param('id') id: string, @Body() pwd: DeleteUserDto) {
-    return this.userService.delete(id, pwd);
+    return this.userService.delete(id, pwd.currentPwd);
   }
 
-  // @Patch('/:id')
-  // updade(@Param('id') id: string, @Body() user: UpdateUserDto) {
-  //   return this.userService.update(id, user);
-  // }
+
+  @Patch('/:id')
+  update(@Param('id') id: string, @Body() user: UpdateUserDto & UserDTO) {
+    return this.userService.update(id, user)
+  }
+
 }

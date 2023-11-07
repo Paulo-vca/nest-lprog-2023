@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 
-export class UserExistException extends BadRequestException{
-    constructor(){
+export class UserExistExeception extends BadRequestException {
+    constructor() {
         super('E-mail already exists!');
     }
 }
