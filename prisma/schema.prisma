@@ -11,71 +11,30 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String
   name      String?
-  address   String?
-  role      Role     @default(USER)
+  password  String
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  Purchase   Purchase[]
-  UserTokens UserTokens[]
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 }
-
-model UserTokens {
-  id String @id @default(uuid())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  refreshToken String
-  family       String   @unique
-  browserInfo  String?
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
-}
-
-model Product {
-  id                 String     @id @default(uuid())
-  name               String     @unique
-  urlName            String     @unique
-  picture            String?
-  basePrice          Decimal
-  discountPercentage Int        @default(0)
-  stock              Int        @default(0)
-  description        String?
-  createdAt          DateTime   @default(now())
-  categories         Category[]
-  Purchase           Purchase[]
+model File{
+  id        String   @id @default(uuid())
+  fileName      String
+  contentLength Int
+  contentType String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  
 }
 
 model Category {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  products Product[]
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 }
-
-model Purchase {
-  id String @id @default(uuid())
-
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userId String?
-
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-
-  amount        Int      @default(1)
-  totalPrice    Decimal
-  reviewNote    Int?
-  reviewComment String?
-  createdAt     DateTime @default(now())
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-
-

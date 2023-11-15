@@ -3,8 +3,9 @@ import { PrismaService } from 'src/database/prisma.service';
 import { CreateUserDto } from './dto/create-user-dto';
 import { compare, hash } from 'bcrypt';
 import { UserDTO } from '../user';
-import { UserNotFoundException } from 'src/common/exceptions/user/user-not-found.exception';
 import { UserExistExeception } from 'src/common/exceptions/user/email-in-use.exception';
+import { UserNotFoundException } from 'src/common/exceptions/user/user-not-found.exception';
+
 
 @Injectable()
 export class UserService {
