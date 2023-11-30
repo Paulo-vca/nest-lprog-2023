@@ -23,7 +23,7 @@ export class CategoryService {
   }
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+    return `This action updates a #${id}, ${updateCategoryDto} category`;
   }
 
   remove(id: number) {

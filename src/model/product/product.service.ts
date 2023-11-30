@@ -8,6 +8,16 @@ export class ProductService {
     return 'This action adds a new product';
   }
 
+  async findAll() {
+    const products = await this.prisma.product.findMany({
+      include:{
+        category: true,
+      }
+    })
+  }
+
+  const productsWithImages = await Promise.all()
+
   findAll() {
     return `This action returns all product`;
   }
