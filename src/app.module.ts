@@ -7,11 +7,12 @@ import { PrismaService } from './database/prisma.service';
 import { CategoryModule } from './model/category/category.module';
 import { FilesModule } from './model/files/files.module';
 import { UserModule } from './model/user/user.module';
-import { ImageModule } from './image/image.module';
-
+import { PaymentModule } from './model/payment/payment.module';
+import { OrdersModule } from './model/orders/orders.module';
+import { ImageModule } from './model/image/image.module';
 
 @Module({
-  imports: [UserModule, PrismaModule, LoginModule, CategoryModule, FilesModule, ImageModule],
+  imports: [UserModule, PrismaModule, LoginModule, CategoryModule, FilesModule, ImageModule, PaymentModule, OrdersModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
